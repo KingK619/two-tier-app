@@ -9,6 +9,10 @@ services:
       MYSQL_DATABASE: devops
     ports:
       - "3306:3306"
+    # --- NEW: Map the container's data to a permanent volume ---
+    volumes:
+      - db_data:/var/lib/mysql
+    # -----------------------------------------------------------
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-proot"]
       timeout: 10s
@@ -27,8 +31,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  # --- NEW MONITORING TOOLS BELOW --- #
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -59,3 +61,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
+
+# --- NEW: Declare the volume so Docker knows to create it ---
+volumes:
+  db_data:
